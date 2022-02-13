@@ -1,6 +1,6 @@
 requests==2.27.1
 certifi==2021.10.8
-charset==normalizer-2.0.12
+charset_normalizer==2.0.12
 idna==3.3
 urllib3==1.26.8
 anyio==3.5.0
