@@ -1,1 +1,1 @@
-worker: python -m test_acesso_API.py
+worker: uvicorn main:app --reload
