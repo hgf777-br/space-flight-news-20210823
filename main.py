@@ -1,7 +1,14 @@
 from fastapi import FastAPI
 from typing import Optional
 from pydantic import BaseModel
+from db.connection import Connection
+from db.db import Db
 
+ESQUEMA = "space"
+TABELA = "articles"
+
+conn = Connection.create()
+db_space = Db(conn)
 
 class Item(BaseModel):
     name: str
@@ -18,9 +25,9 @@ async def root():
     return {"message": "Back-end Challenge 2021 🏅 - Space Flight News"}
 
 
-@app.get("/items/{id}")
+@app.get("/articles/{id}")
 async def read_item(id: int):
-    return {"item id": id}
+    return db_space.recuperar_article(id, TABELA, ESQUEMA)
 
 
 @app.post("/items/")
