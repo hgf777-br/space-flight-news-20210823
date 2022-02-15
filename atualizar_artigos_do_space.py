@@ -1,0 +1,65 @@
+# Script para carregar os artigos novos do site https://spaceflightnewsapi.net/
+# para o nosso banco de dados Postgres no Heroku
+
+from space.space import Space
+from db.connection import Connection
+from db.db import Db
+
+ESQUEMA = "space"
+TABELA = "articles"
+CAMPOS_CRIAR = """
+    id serial primary key,
+    id_space int,
+    title varchar(255),
+    url varchar(255),
+    imageUrl varchar(511),
+    newsSite varchar(100),
+    summary varchar,
+    publishedAt varchar(255),
+    updateddAt varchar(255),
+    featured boolean,
+    launch_id varchar(255),
+    launch_provider varchar(100),
+    events_id varchar(255),
+    events_provider varchar(100)
+"""
+
+CAMPOS = """
+    id_space,
+    title,
+    url,
+    imageUrl,
+    newsSite,
+    summary,
+    publishedAt,
+    updateddAt,
+    featured,
+    launch_id,
+    launch_provider,
+    events_id,
+    events_provider
+"""
+
+print("="*40)
+print("Script para carregar os novos artigos".center(40))
+print("="*40 + "\n")
+
+sp = Space()
+conn = Connection.create()
+db_space = Db(conn)
+
+sql = f"SELECT id_space FROM {ESQUEMA}.{TABELA} ORDER BY id_space DESC LIMIT 1"
+cur = conn.cursor()
+cur.execute(sql)
+id_ultimo = cur.fetchone()[0]
+cur.close()
+print(f"ultimo artigo importado: {id_ultimo}\n")
+articles = sp.new_articles(id_ultimo)
+print(f"foram encontrados {len(articles)} artigos novos")
+print("Atualizando os dados, aguarde por favor\n")
+if db_space.inserir_dados(TABELA, ESQUEMA, CAMPOS, articles):
+    print("Dados inseridos com sucesso")
+else:
+    print("Dados não inseridos")
+
+db_space.fechar()

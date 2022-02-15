@@ -19,3 +19,10 @@ class Space():
             return [Article(**a) for a in r.json()]
         else:
             return []
+
+    def new_articles(self, id: int) -> list:
+        r = requests.get(BASE_URL + f"/articles?_sort=id&id_gt={id}")
+        if r.status_code == 200:
+            return [Article(**a) for a in r.json()]
+        else:
+            return []
