@@ -1,4 +1,20 @@
-import psycopg2
+ESQUEMA = "space"
+TABELA = "articles"
+CAMPOS = """
+    id_space,
+    title,
+    url,
+    imageUrl,
+    newsSite,
+    summary,
+    publishedAt,
+    updateddAt,
+    featured,
+    launch_id,
+    launch_provider,
+    events_id,
+    events_provider
+"""
 
 
 class Db:
@@ -6,6 +22,8 @@ class Db:
 
     def __init__(self, conn):
         self._db = conn
+        
+    # Rotinas para a inserção inicial dos dados
 
     def checar_schema(self, schema: str):
         sql = f"""
@@ -74,16 +92,108 @@ class Db:
             return False
         return True
 
-    def recuperar_article(self, id: int, table: str, schema: str):
+    # Rotinas para a API
+
+    def recuperar_article(self, id: int):
         rs = None
         try:
-            sql = f"SELECT * FROM {schema}.{table} WHERE id={id}"
+            sql = f"SELECT * FROM {ESQUEMA}.{TABELA} WHERE id={id}"
             cur = self._db.cursor()
             cur.execute(sql)
             rs = cur.fetchone()
+            cur.close()
         except:
             return None
-        return rs
+        if rs is None:
+            return "Não encontramos este ID na Base de Dados"
+        else:
+            ds = self._criar_dict(rs)
+            return ds
+
+    def recuperar_article_range(self, offset: int, limit: int):
+        rs = None
+        try:
+            sql = f"SELECT * FROM {ESQUEMA}.{TABELA} WHERE id>={offset} ORDER BY id LIMIT {limit}"
+            cur = self._db.cursor()
+            cur.execute(sql)
+            rs = cur.fetchall()
+            cur.close()
+        except:
+            return None
+            
+        return [self._criar_dict(r) for r in rs]
+
+    def apagar_article(self, id: int):
+        ds = self.recuperar_article(id)
+        try:
+            sql = f"DELETE FROM {ESQUEMA}.{TABELA} WHERE id={id}"
+            cur = self._db.cursor()
+            cur.execute(sql)
+            cur.close()
+            self._db.commit()
+        except:
+            return None
+        return ds
+
+    def inserir_article(self, article: dict):
+        ds = list(article.values())
+        ev = list(ds.pop()[0].values())
+        la = list(ds.pop()[0].values())
+        ds += (la + ev)
+        try:
+            sql = f"INSERT INTO {ESQUEMA}.{TABELA} ({CAMPOS}) VALUES (0, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            cur = self._db.cursor()
+            cur.execute(sql, ds)
+            cur.close()
+            self._db.commit()
+        except:
+            return None
+        return article
+
+    def editar_article(self, id: int, article: dict):
+        ds = list(article.values())
+        ev = list(ds.pop()[0].values())
+        la = list(ds.pop()[0].values())
+        ds += (la + ev)
+        if isinstance(self.recuperar_article(id), dict):
+            sql = f"""UPDATE {ESQUEMA}.{TABELA}
+                    SET title = '{ds[0]}',
+                        url = '{ds[1]}',
+                        imageUrl = '{ds[2]}',
+                        newsSite = '{ds[3]}',
+                        summary = '{ds[4]}',
+                        publishedAt = '{ds[5]}',
+                        updateddAt = '{ds[6]}',
+                        featured = '{ds[7]}',
+                        launch_id = '{ds[8]}',
+                        launch_provider = '{ds[9]}',
+                        events_id = '{ds[10]}',
+                        events_provider = '{ds[11]}'
+                    WHERE id = {id}
+                    """
+            cur = self._db.cursor()
+            cur.execute(sql, ds)
+            cur.close()
+            self._db.commit()
+            return article
+        return "Não encontramos este ID na Base de Dados"
+    
+    def _criar_dict(self, rs):
+        ds = {
+            "id": rs[0],
+            "title": rs[2],
+            "url": rs[3],
+            "imageUrl": rs[4],
+            "newsSite": rs[5],
+            "summary": rs[6],
+            "publishedAt": rs[7],
+            "updatedAt": rs[8],
+            "featured": rs[9]
+        }
+        ds["launches"] = [{"id": rs[10], "provider": rs[11]}] if rs[10] != "" else []
+        ds["events"] = [{"id": rs[12], "provider": rs[13]}] if rs[12] != "" else []
+
+        return ds
 
     def fechar(self):
         self._db.close()

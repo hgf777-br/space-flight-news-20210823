@@ -1,7 +1,6 @@
 # Script para carregar os artigos do site https://spaceflightnewsapi.net/
 # para o nosso banco de dados Postgres no Heroku
 
-import psycopg2
 from space.space import Space
 from db.connection import Connection
 from db.db import Db
@@ -9,8 +8,8 @@ from db.db import Db
 ESQUEMA = "space"
 TABELA = "articles"
 CAMPOS_CRIAR = """
-    id_key serial primary key,
-    id int,
+    id serial primary key,
+    id_space int,
     title varchar(255),
     url varchar(255),
     imageUrl varchar(511),
@@ -26,7 +25,7 @@ CAMPOS_CRIAR = """
 """
 
 CAMPOS = """
-    id,
+    id_space,
     title,
     url,
     imageUrl,
@@ -70,8 +69,10 @@ if not db_space.checar_table(TABELA, ESQUEMA):
 else:
     print("tabela já existe\n")
 
-print("Inserindo os dados, aguarde por favor (deve levar em torno de 30 minutos)\n")
+print("Inserindo os dados, aguarde por favor (> 30 minutos)\n")
 if db_space.inserir_dados(TABELA, ESQUEMA, CAMPOS, articles):
     print("Dados inseridos com sucesso")
 else:
     print("Dados não inseridos")
+
+db_space.fechar()

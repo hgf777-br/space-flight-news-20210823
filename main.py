@@ -1,20 +1,34 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from typing import Optional
 from pydantic import BaseModel
 from db.connection import Connection
 from db.db import Db
 
-ESQUEMA = "space"
-TABELA = "articles"
-
 conn = Connection.create()
 db_space = Db(conn)
 
-class Item(BaseModel):
-    name: str
-    description: Optional[str] = None
-    price: float
-    tax: Optional[float] = None
+
+class Launches(BaseModel):
+    id: str
+    provider: str
+
+
+class Events(BaseModel):
+    id: str
+    provider: str
+
+
+class Article(BaseModel):
+    title: str
+    url: str
+    imageUrl: str
+    newsSite: str
+    summary: str
+    publishedAt: str
+    updatedAt: str
+    featured: bool
+    launches: list[Launches]
+    events: list[Events]
 
 
 app = FastAPI()
@@ -25,20 +39,34 @@ async def root():
     return {"message": "Back-end Challenge 2021 🏅 - Space Flight News"}
 
 
+@app.get("/articles/")
+async def read_article_range(
+    offset: int = Query(1,
+                        title="offset",
+                        description="id inicial para a lista de artigos.",
+                        gt=0),
+    limit: int = Query(10,
+                        title="limite",
+                        description="numero de artigos que serão retornados na lista.")
+        ):
+    return db_space.recuperar_article_range(offset, limit)
+
+
 @app.get("/articles/{id}")
-async def read_item(id: int):
-    return db_space.recuperar_article(id, TABELA, ESQUEMA)
+async def read_article(id: int):
+    return db_space.recuperar_article(id)
 
 
-@app.post("/items/")
-async def create_item(item: Item):
-    item_dict = item.dict()
-    if item.tax:
-        price_with_tax = item.price + item.tax
-        item_dict.update({"price_with_tax": price_with_tax})
-    return item_dict
+@app.post("/articles/")
+async def create_article(article: Article):
+    return db_space.inserir_article(article.dict())
 
 
-@app.put("/items/{item_id}")
-async def change_item(item_id: int, item: Item):
-    return {"item_id": item_id, **item.dict()}
+@app.put("/articles/{id}")
+async def change_article(id: int, article: Article):
+    return db_space.editar_article(id, article.dict())
+
+
+@app.delete("/articles/{id}")
+async def delete_article(id: int):
+    return db_space.apagar_article(id)

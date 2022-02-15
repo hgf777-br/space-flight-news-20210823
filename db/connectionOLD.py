@@ -1,9 +1,9 @@
 import psycopg2
 
-PGHOST = "ec2-34-206-148-196.compute-1.amazonaws.com"
-PGDATABASE = "d6q0cel9pmg7c"
-PGUSER = "rlwulmwptgnxah"
-PGPASSWORD = "fad69ef6ffca471156c66f2d901fe9735d8bd66e790809a7f11e25d6b545c024"
+PGHOST = "ec2-54-172-126-94.compute-1.amazonaws.com"
+PGDATABASE = "db2otnd9s7ld7n"
+PGUSER = "fnjcktapkqvsyy"
+PGPASSWORD = "ac177db6be80286cb03cf63c634cdd260d6d004db548936de9ca5b172488f5be"
 
 
 class Connection:
