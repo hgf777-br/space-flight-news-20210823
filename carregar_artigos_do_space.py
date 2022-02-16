@@ -5,6 +5,7 @@ from space.space import Space
 from db.connection import Connection
 from db.db import Db
 
+# Formato da Tabela no Banco de Dados
 ESQUEMA = "space"
 TABELA = "articles"
 CAMPOS_CRIAR = """
@@ -44,15 +45,19 @@ print("="*40)
 print("Script para carregar os dados".center(40))
 print("="*40 + "\n")
 
+# Verificando quantos artigos o site Space possui
 sp = Space()
 count = sp.articles_count()
 print(f"numero de artigos disponíveis: {count}\n")
 
+# Carregando todos os arquivos do site Space
 articles = sp.articles(count)
 
+# Conexão com o Banco de Dados
 conn = Connection.create()
 db_space = Db(conn)
 
+# Confere se o esquema já exite, e se não, cria o esquema
 if not db_space.checar_schema(ESQUEMA):
     if db_space.criar_schema(ESQUEMA):
         print("esquema criado\n")
@@ -61,6 +66,7 @@ if not db_space.checar_schema(ESQUEMA):
 else:
     print("esquema já existe\n")
 
+# Confere se a tabela já exite, e se não, cria a tabela
 if not db_space.checar_table(TABELA, ESQUEMA):
     if db_space.criar_table(TABELA, ESQUEMA, CAMPOS_CRIAR):
         print("tabela criada\n")
@@ -69,10 +75,12 @@ if not db_space.checar_table(TABELA, ESQUEMA):
 else:
     print("tabela já existe\n")
 
+# Carrega os artigos no Banco de Dados
 print("Inserindo os dados, aguarde por favor (> 30 minutos)\n")
 if db_space.inserir_dados(TABELA, ESQUEMA, CAMPOS, articles):
     print("Dados inseridos com sucesso")
 else:
     print("Dados não inseridos")
 
+# Fecha a conexão com o Banco de Dados
 db_space.fechar()

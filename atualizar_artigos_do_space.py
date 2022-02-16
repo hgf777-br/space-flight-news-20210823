@@ -1,10 +1,11 @@
-# Script para carregar os artigos novos do site https://spaceflightnewsapi.net/
+# Script para carregar os artigos novos, diariamentedo, site https://spaceflightnewsapi.net/
 # para o nosso banco de dados Postgres no Heroku
 
 from space.space import Space
 from db.connection import Connection
 from db.db import Db
 
+# Formato da Tabela no Banco de Dados
 ESQUEMA = "space"
 TABELA = "articles"
 CAMPOS_CRIAR = """
@@ -48,18 +49,24 @@ sp = Space()
 conn = Connection.create()
 db_space = Db(conn)
 
+# descobrindo o id do ultimo artigo do site Space en nosso banco de dados
 sql = f"SELECT id_space FROM {ESQUEMA}.{TABELA} ORDER BY id_space DESC LIMIT 1"
 cur = conn.cursor()
 cur.execute(sql)
 id_ultimo = cur.fetchone()[0]
 cur.close()
 print(f"ultimo artigo importado: {id_ultimo}\n")
+
+# carregando do site Space os novos artigos  
 articles = sp.new_articles(id_ultimo)
 print(f"foram encontrados {len(articles)} artigos novos")
+
+# incluindo os novos artigos no nosso Banco de Dados
 print("Atualizando os dados, aguarde por favor\n")
 if db_space.inserir_dados(TABELA, ESQUEMA, CAMPOS, articles):
     print("Dados inseridos com sucesso")
 else:
     print("Dados não inseridos")
 
+# fecha a conexão com o Banco de Dados
 db_space.fechar()

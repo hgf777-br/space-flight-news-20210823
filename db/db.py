@@ -18,11 +18,9 @@ CAMPOS = """
 
 
 class Db:
-    _db = None
-
     def __init__(self, conn):
         self._db = conn
-        
+
     # Rotinas para a inserção inicial dos dados
 
     def checar_schema(self, schema: str):
