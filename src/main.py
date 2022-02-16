@@ -52,7 +52,7 @@ async def root():
     return {"message": "Back-end Challenge 2021 🏅 - Space Flight News"}
 
 
-@app.get("/articles/", response_model=ArticleOut)
+@app.get("/articles/", response_model=list[ArticleOut])
 async def read_article_range(
     offset: int = Query(1,
                         title="offset",
