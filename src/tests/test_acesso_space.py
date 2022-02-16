@@ -1,4 +1,4 @@
-from space.space import Space
+from src.space.space import Space
 
 
 def test_criar_acesso_space():
@@ -6,10 +6,11 @@ def test_criar_acesso_space():
     assert sp is not None
 
 
-def test_acessar_qtd_artigos():
+def test_quantidade_artigos():
     sp = Space()
     count = sp.articles_count()
     assert isinstance(count, int) and count != -1
+
 
 def test_listar_artigos():
     sp = Space()

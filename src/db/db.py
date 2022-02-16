@@ -92,6 +92,19 @@ class Db:
 
     # Rotinas para a API
 
+    def _recuperar_ultimo_article(self):
+        rs = None
+        try:
+            sql = f"SELECT * FROM {ESQUEMA}.{TABELA} ORDER BY id DESC LIMIT 1"
+            cur = self._db.cursor()
+            cur.execute(sql)
+            rs = cur.fetchone()
+            cur.close()
+        except:
+            return None
+        ds = self._criar_dict(rs)
+        return ds
+
     def recuperar_article(self, id: int):
         rs = None
         try:
@@ -118,7 +131,7 @@ class Db:
             cur.close()
         except:
             return None
-            
+
         return [self._criar_dict(r) for r in rs]
 
     def apagar_article(self, id: int):
@@ -146,7 +159,7 @@ class Db:
             self._db.commit()
         except:
             return None
-        return article
+        return self._recuperar_ultimo_article()
 
     def editar_article(self, id: int, article: dict):
         ds = list(article.values())
@@ -173,9 +186,9 @@ class Db:
             cur.execute(sql, ds)
             cur.close()
             self._db.commit()
-            return article
+            return self.recuperar_article(id)
         return "Não encontramos este ID na Base de Dados"
-    
+
     def _criar_dict(self, rs):
         ds = {
             "id": rs[0],

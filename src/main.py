@@ -1,5 +1,4 @@
 from fastapi import FastAPI, Query, Path, Body
-from typing import Optional
 from pydantic import BaseModel
 from src.db.connection import Connection
 from src.db.db import Db
@@ -31,7 +30,7 @@ class Article(BaseModel):
     events: list[Events]
 
 
-class Article_out(BaseModel):
+class ArticleOut(BaseModel):
     id: int
     title: str
     url: str
@@ -53,47 +52,47 @@ async def root():
     return {"message": "Back-end Challenge 2021 🏅 - Space Flight News"}
 
 
-@app.get("/articles/", response_model=Article_out)
+@app.get("/articles/", response_model=ArticleOut)
 async def read_article_range(
     offset: int = Query(1,
                         title="offset",
                         description="id inicial para a lista de artigos.",
                         gt=0),
     limit: int = Query(10,
-                        title="limite",
-                        description="numero de artigos que serão retornados na lista.")
+                       title="limite",
+                       description="numero de artigos que serão retornados na lista.")
         ):
     return db_space.recuperar_article_range(offset, limit)
 
 
-@app.get("/articles/{id}", response_model=Article_out)
+@app.get("/articles/{id}", response_model=ArticleOut)
 async def read_article(
     id: int = Path(...,
-                    title="id do artigo",
-                    description="id do artigo que deseja buscar")
-    ):
+                   title="id do artigo",
+                   description="id do artigo que deseja buscar")
+        ):
     return db_space.recuperar_article(id)
 
 
-@app.post("/articles/", response_model=Article_out)
+@app.post("/articles/", response_model=ArticleOut)
 async def create_article(article: Article):
     return db_space.inserir_article(article.dict())
 
 
-@app.put("/articles/{id}", response_model=Article_out)
+@app.put("/articles/{id}", response_model=ArticleOut)
 async def change_article(
         id: int = Path(...,
-                        title="id do artigo",
-                        description="id do artigo que deseja alterar"),
+                       title="id do artigo",
+                       description="id do artigo que deseja alterar"),
         article: Article = Body(...)
-    ):
+        ):
     return db_space.editar_article(id, article.dict())
 
 
-@app.delete("/articles/{id}", response_model=Article_out)
+@app.delete("/articles/{id}", response_model=ArticleOut)
 async def delete_article(
     id: int = Path(...,
-                    title="id do artigo",
-                    description="id do artigo que deseja alterar"),
-    ):
+                   title="id do artigo",
+                   description="id do artigo que deseja alterar"),
+        ):
     return db_space.apagar_article(id)

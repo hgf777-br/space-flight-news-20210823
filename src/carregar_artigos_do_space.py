@@ -76,15 +76,15 @@ else:
     print("tabela já existe\n")
     
     # descobrindo o id do ultimo artigo do site Space en nosso banco de dados
-    sql = f"SELECT count(id_space) FROM {ESQUEMA}.{TABELA}"
+    sql = f"SELECT count(id_space) FROM {ESQUEMA}.{TABELA} WHERE id_space > 0"
     cur = conn.cursor()
     cur.execute(sql)
     qtd_id_space = cur.fetchone()[0]
     cur.close()
-    print(f"artigos já foram importados, quantidade atual: {qtd_id_space}\n")
-    
-db_space.fechar()
-exit()
+    if qtd_id_space != 0:
+        print(f"artigos já foram importados, quantidade atual: {qtd_id_space}\n")
+        db_space.fechar()
+        exit()
 # Carrega os artigos no Banco de Dados
 print("Inserindo os dados, aguarde por favor (> 30 minutos)\n")
 if db_space.inserir_dados(TABELA, ESQUEMA, CAMPOS, articles):
