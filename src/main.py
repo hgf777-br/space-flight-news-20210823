@@ -44,6 +44,10 @@ class ArticleOut(BaseModel):
     events: list[Events]
 
 
+class Message(BaseModel):
+    message: str
+
+
 app = FastAPI()
 
 
@@ -65,7 +69,7 @@ async def read_article_range(
     return db_space.recuperar_article_range(offset, limit)
 
 
-@app.get("/articles/{id}", response_model=ArticleOut)
+@app.get("/articles/{id}", response_model=ArticleOut, responses={404: {"model": Message}})
 async def read_article(
     id: int = Path(...,
                    title="id do artigo",
@@ -79,7 +83,7 @@ async def create_article(article: Article):
     return db_space.inserir_article(article.dict())
 
 
-@app.put("/articles/{id}", response_model=ArticleOut)
+@app.put("/articles/{id}", response_model=ArticleOut, responses={404: {"model": Message}})
 async def change_article(
         id: int = Path(...,
                        title="id do artigo",
@@ -89,7 +93,7 @@ async def change_article(
     return db_space.editar_article(id, article.dict())
 
 
-@app.delete("/articles/{id}", response_model=ArticleOut)
+@app.delete("/articles/{id}", response_model=ArticleOut, responses={404: {"model": Message}})
 async def delete_article(
     id: int = Path(...,
                    title="id do artigo",

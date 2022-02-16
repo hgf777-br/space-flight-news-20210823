@@ -1,3 +1,5 @@
+from fastapi.responses import JSONResponse
+
 ESQUEMA = "space"
 TABELA = "articles"
 CAMPOS = """
@@ -116,7 +118,7 @@ class Db:
         except:
             return None
         if rs is None:
-            return "Não encontramos este ID na Base de Dados"
+            return JSONResponse(status_code=404, content={"message": "Não encontramos este ID na Base de Dados"})
         else:
             ds = self._criar_dict(rs)
             return ds
@@ -187,7 +189,7 @@ class Db:
             cur.close()
             self._db.commit()
             return self.recuperar_article(id)
-        return "Não encontramos este ID na Base de Dados"
+        return JSONResponse(status_code=404, content={"message": "Não encontramos este ID na Base de Dados"})
 
     def _criar_dict(self, rs):
         ds = {
