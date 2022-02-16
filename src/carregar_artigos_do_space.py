@@ -1,4 +1,4 @@
-# Script para carregar os artigos novos, diariamentedo, site https://spaceflightnewsapi.net/
+# Script para carregar os artigos do site https://spaceflightnewsapi.net/
 # para o nosso banco de dados Postgres no Heroku
 
 from space.space import Space
@@ -42,31 +42,46 @@ CAMPOS = """
 """
 
 print("="*40)
-print("Script para carregar os novos artigos".center(40))
+print("Script para carregar os dados".center(40))
 print("="*40 + "\n")
 
+# Verificando quantos artigos o site Space possui
 sp = Space()
+count = sp.articles_count()
+print(f"numero de artigos disponíveis: {count}\n")
+
+# Carregando todos os arquivos do site Space
+articles = sp.articles(count)
+
+# Conexão com o Banco de Dados
 conn = Connection.create()
 db_space = Db(conn)
 
-# descobrindo o id do ultimo artigo do site Space en nosso banco de dados
-sql = f"SELECT id_space FROM {ESQUEMA}.{TABELA} ORDER BY id_space DESC LIMIT 1"
-cur = conn.cursor()
-cur.execute(sql)
-id_ultimo = cur.fetchone()[0]
-cur.close()
-print(f"ultimo artigo importado: {id_ultimo}\n")
+# Confere se o esquema já exite, e se não, cria o esquema
+if not db_space.checar_schema(ESQUEMA):
+    if db_space.criar_schema(ESQUEMA):
+        print("esquema criado\n")
+    else:
+        print("esquema não foi criado\n")
+else:
+    print("esquema já existe\n")
 
-# carregando do site Space os novos artigos  
-articles = sp.new_articles(id_ultimo)
-print(f"foram encontrados {len(articles)} artigos novos")
+# Confere se a tabela já exite, e se não, cria a tabela
+if not db_space.checar_table(TABELA, ESQUEMA):
+    if db_space.criar_table(TABELA, ESQUEMA, CAMPOS_CRIAR):
+        print("tabela criada\n")
+    else:
+        print("tabela não foi criada\n")
+else:
+    print("tabela já existe\n")
+    
 
-# incluindo os novos artigos no nosso Banco de Dados
-print("Atualizando os dados, aguarde por favor\n")
+# Carrega os artigos no Banco de Dados
+print("Inserindo os dados, aguarde por favor (> 30 minutos)\n")
 if db_space.inserir_dados(TABELA, ESQUEMA, CAMPOS, articles):
     print("Dados inseridos com sucesso")
 else:
     print("Dados não inseridos")
 
-# fecha a conexão com o Banco de Dados
+# Fecha a conexão com o Banco de Dados
 db_space.fechar()
