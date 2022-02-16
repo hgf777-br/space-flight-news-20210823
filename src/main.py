@@ -1,8 +1,8 @@
 from fastapi import FastAPI, Query, Path, Body
 from typing import Optional
 from pydantic import BaseModel
-from db.connection import Connection
-from db.db import Db
+from src.db.connection import Connection
+from src.db.db import Db
 
 conn = Connection.create()
 db_space = Db(conn)
