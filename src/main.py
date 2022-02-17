@@ -64,7 +64,7 @@ async def read_article_range(
                         gt=0),
     limit: int = Query(10,
                        title="limite",
-                       description="numero de artigos que serão retornados na lista.")
+                       description="quantidade de artigos que serão retornados na lista.")
         ):
     return db_space.recuperar_article_range(offset, limit)
 
@@ -97,6 +97,6 @@ async def change_article(
 async def delete_article(
     id: int = Path(...,
                    title="id do artigo",
-                   description="id do artigo que deseja alterar"),
+                   description="id do artigo que deseja apagar"),
         ):
     return db_space.apagar_article(id)
