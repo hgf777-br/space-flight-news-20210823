@@ -22,7 +22,7 @@ Desafio para vaga de Backend Developer no Coodesh: [Desafio no Coodesh](https://
 4) Criar um novo aplicativo no Heroku
 5) Adicionar um banco de dados Postgres ao seu app do Heroku. Isso é possível na aba "Resources" procurando a opção "Heroku Postgres". Na instalação você pode usar a versão FREE mas se quiser usar a API por mais de 7 dias precisará instalar a versão BASIC que custa USD 9,00/mês.
 6) Após adicionar o Postgres copie as credenciais do banco de dados na aba "Settings" e cole-as no arquivo "src\db\connection.py" nas respectivas CONSTANTES logo no início do arquivo.
-7) Após inserir as credenciais do seu banco de dados suba o repostotório para a sua conta no Github.
+7) Após inserir as credenciais do seu banco de dados suba o diretório clonado para um novo repositório a sua conta no Github.
 8) Na aba "Actions" verifique se os testes de Integração contínua passam OK. Em caso de problema delete o Repositório e começe o processo de novo, conferindo as credenciais do seu banco de dados.
 9) Se tudo estiver ok, ainda na aba "Actions", inicie o processo "Carregar Artigos do Space" para trazer os artigos do site SpaceFlightNews para o seu banco de dados. Este processo deve demorar mais de 30 minutos, se quiser acompanhar o andamento entre no processo depois de iniciado, ou espere o "Actions" marcar ele como terminado (ok verde).
 10) Voltando ao Heroku vamos adicionar o "Heroku Scheduler". Vá na aba "Resources", procure e instale o "Heroku Scheduler". Crie um novo "Job" para rodar as 09:00 UTC o comando "python ./src/atualizar_artigos_do_space.py". Com isto todo dia as 9 horas da manhã o nosso sistema irá procurar por novos artigos no site SpaceFlightNews e atualizar o nosso banco de dados.
