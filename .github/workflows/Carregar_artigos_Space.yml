@@ -22,5 +22,5 @@ jobs:
         pip install -r requirements.txt
     - name: Carregar os artigos
       run: |
-        python /src/carregar_artigos_do_space.py
+        python ./src/carregar_artigos_do_space.py
         
