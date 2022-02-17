@@ -1,19 +1,22 @@
 # Flake8
-flake8==4.0.1 
-mccabe==0.6.1 
-pycodestyle==2.8.0 
+flake8==4.0.1
+mccabe==0.6.1
+pycodestyle==2.8.0
 pyflakes==2.4.0
 # AutoPep8
-autopep8==1.6.0 
+autopep8==1.6.0
 toml==0.10.2
 # Pytest
-atomicwrites==1.4.0 
-attrs==21.4.0 
-iniconfig==1.1.1 
-packaging==21.3 
-pluggy==1.0.0 
-py==1.11.0 
-pyparsing==3.0.7 
-pytest==7.0.1 
+atomicwrites==1.4.0
+attrs==21.4.0
+iniconfig==1.1.1
+packaging==21.3
+pluggy==1.0.0
+py==1.11.0
+pyparsing==3.0.7
+pytest==7.0.1
 tomli==2.0.1
+# Codecov
+coverage==6.3.1
+pytest-cov==3.0.0
 -r requirements.txt
